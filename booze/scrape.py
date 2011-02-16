@@ -1,5 +1,5 @@
 from BeautifulSoup import BeautifulSoup
-from booze.models import DrinkLink, Cocktail, Ingredient
+from booze.models import DrinkLink, Cocktail, Ingredient, IngredientUrl, IngredientChild, LiquorChild
 
 import urllib2
 import re
@@ -71,3 +71,62 @@ def get_drinks():
             pass
 
 
+def build_hierarchy():
+    base_url = "http://www.drinksmixer.com"
+    links = IngredientUrl.objects.all()
+    for link in links:
+        url = base_url + link.href
+        print "Getting URL: %s" % url
+        soup = BeautifulSoup(urllib2.urlopen(url).read())
+        soup = soup('div', {'class':'scat'})
+        if soup:
+            soup = soup[0]
+            child_hrefs = [l['href'] for l in soup('a', href=re.compile("^/desc"))]
+            for child in child_hrefs:
+                try:
+                    ic = IngredientChild()
+                    ic.parent = link
+                    ic.href = child
+                    ic.save()
+                    print "Saved child: %s" % child
+                except:
+                    pass
+                
+def build_liquor_hierarchy():
+    base_url = "http://www.drinksmixer.com"
+    links = IngredientUrl.objects.all()
+    for link in links:
+        url = base_url + link.href
+        print "Getting URL: %s" % url
+        soup = BeautifulSoup(urllib2.urlopen(url).read())
+        soup = soup('p', {'class':'l1a'})
+        if soup:
+            soup = soup[0]
+            child_hrefs = [l['href'] for l in soup('a', href=re.compile("^/desc"))]
+            for child in child_hrefs:
+                try:
+                    ic = LiquorChild()
+                    ic.parent = link
+                    ic.href = child
+                    ic.save()
+                    print "Saved child: %s" % child
+                except:
+                    pass
+
+def get_ing_details():
+    links = []
+    start_url = "http://www.drinksmixer.com/desca.html"
+    links = links + get_page_links(start_url)
+    for link in links:
+        print link
+        
+def get_drink_details(link):
+    soup = BeautifulSoup(urllib2.urlopen(url).read())
+    
+        
+def get_page_links(url):
+    base_url = "http://www.drinksmixer.com"
+    soup = BeautifulSoup(urllib2.urlopen(url).read())
+    links = [base_url + l['href'] for l in soup('a', href=re.compile("^/desc"))]
+    return links
+    

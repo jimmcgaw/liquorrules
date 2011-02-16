@@ -1,0 +1,14 @@
+{% extends "liquor.html" %}
+
+{% block content %}
+    <h2>Search Here</h2>
+    <form action="{% url booze_home %}" method="post">
+        <input type="search" name="q" placeholder="Enter liquor or drink name" value="{{ q }}" />
+        <input type="submit" value="Search" />{% csrf_token %}
+    </form>
+    <br /><br />
+    {% for drink in drinks %}
+        <span style="color:black;">{{ drink.name }}</span><br />
+    {% endfor %}
+    
+{% endblock %}
