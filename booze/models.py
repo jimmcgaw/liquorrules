@@ -9,6 +9,7 @@ class Cocktail(models.Model):
     name = models.CharField(max_length=100)
     summary = models.TextField()
     instructions = models.TextField()
+    url = models.ForeignKey("booze.DrinkLink")
 
 class Ingredient(models.Model):
     amount = models.CharField(max_length=50)
